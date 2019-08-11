@@ -9,7 +9,8 @@
         "128": "icon.png"
     },
     "permissions": [
-        "tabs"
+        "https://www3.nhk.or.jp/news/easy/*",
+        "http://easyjapanese.net/news/*"
     ],
     "content_scripts": [
         {
