@@ -1,0 +1,32 @@
+{
+    "manifest_version": 2,
+    "name": "NHK NEWS 固定播放器",
+    "description": "在看 NHK NEWS 的時候想要跟讀卻發現播放器在太上面嗎? 使用這個套件讓播放器固定沒煩惱",
+    "version": "1.0.0",
+    "icons": {
+        "16": "icon.png",
+        "48": "icon.png",
+        "128": "icon.png"
+    },
+    "permissions": [
+        "tabs"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "http://*/*",
+                "https://*/*"
+            ],
+            "js": [
+                "jquery-1.11.3.min.js",
+                "content_scripts.js"
+            ]
+        }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    }
+}
