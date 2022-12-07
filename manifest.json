@@ -1,16 +1,16 @@
 {
-    "manifest_version": 2,
-    "name": "NHK NEWS 固定播放器",
-    "description": "在看 NHK NEWS 的時候想要跟讀卻發現播放器在太上面嗎? 使用這個套件讓播放器固定沒煩惱",
+    "manifest_version": 3,
+    "name": "Facebook Ad Blocker",
+    "description": "Hide the sponsored and recommended posts on Facebook",
     "version": "1.0.0",
     "icons": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
+        "16": "logo16.png",
+        "48": "logo48.png",
+        "128": "logo128.png"
     },
-    "permissions": [
-        "https://www3.nhk.or.jp/news/easy/*",
-        "http://easyjapanese.net/news/*"
+    "permissions": ["tabs", "activeTab"],
+    "host_permissions": [
+        "http://www.facebook.com/"
     ],
     "content_scripts": [
         {
@@ -18,16 +18,10 @@
                 "http://*/*",
                 "https://*/*"
             ],
-            "js": [
-                "jquery-1.11.3.min.js",
-                "content_scripts.js"
-            ]
+            "js": ["content_scripts.js"]
         }
     ],
     "background": {
-        "scripts": [
-            "background.js"
-        ],
-        "persistent": true
+        "service_worker": "background.js"
     }
 }
