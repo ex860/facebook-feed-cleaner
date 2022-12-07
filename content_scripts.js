@@ -1,9 +1,13 @@
 const feedRoleNodeAttribute = 'role';
 const feedRoleNodeValue = 'feed';
+const feedListParentNodeSelector = {
+    ssrbFeed: '#ssrb_feed_start + div > div',
+    roleFeed: `[${feedRoleNodeAttribute}="${feedRoleNodeValue}"] > div`
+};
 const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
-const hideSponsoredPosts = () => {
+const hideSponsoredPosts = ssrbFeedStart => {
     const sponsoredIds = [];
     document.querySelectorAll('svg text:not([seen])').forEach((node) => {
         node.setAttribute('seen', true);
@@ -19,7 +23,13 @@ const hideSponsoredPosts = () => {
                 let child = useNode;
                 let parent = useNode?.parentNode;
                 let grandParent = parent?.parentNode;
-                while (grandParent && grandParent.getAttribute(feedRoleNodeAttribute) !== feedRoleNodeValue) {
+                while (grandParent) {
+                    if (
+                        ssrbFeedStart && grandParent.parentNode === ssrbFeedStart.nextElementSibling
+                        || !ssrbFeedStart && grandParent.getAttribute(feedRoleNodeAttribute) === feedRoleNodeValue
+                    ) {
+                        break;
+                    }
                     child = parent;
                     parent = grandParent;
                     grandParent = parent.parentNode;
@@ -34,8 +44,9 @@ const hideSponsoredPosts = () => {
     }
 };
 
-const hideSuggestedPosts = () => {
-    const feedList = document.querySelectorAll(`[${feedRoleNodeAttribute}="${feedRoleNodeValue}"] > div > *:not([seen])`);
+const hideSuggestedPosts = ssrbFeedStart => {
+    const feedListSelector = `${feedListParentNodeSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']} > *:not([seen])`
+    const feedList = document.querySelectorAll(feedListSelector);
     feedList.forEach((feedNode) => {
         feedNode.setAttribute('seen', true);
         Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
@@ -51,11 +62,12 @@ const hideSuggestedPosts = () => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.isFacebookSite) {
-        const feedListParentNode = document.querySelector(`[${feedRoleNodeAttribute}="${feedRoleNodeValue}"] > div`);
+        const ssrbFeedStart = document.getElementById('ssrb_feed_start');
+        const feedListParentNode = document.querySelector(feedListParentNodeSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
         const config = { attributes: false, childList: true, subtree: false };
         const callback = (_mutationsList, _observer) => {
-            hideSponsoredPosts();
-            hideSuggestedPosts();
+            hideSponsoredPosts(ssrbFeedStart);
+            hideSuggestedPosts(ssrbFeedStart);
         };
         const observer = new MutationObserver(callback);
         observer.observe(feedListParentNode, config);
