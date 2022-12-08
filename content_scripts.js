@@ -1,9 +1,10 @@
 const feedRoleNodeAttribute = 'role';
 const feedRoleNodeValue = 'feed';
-const feedListParentNodeSelector = {
-    ssrbFeed: '#ssrb_feed_start + div > div',
-    roleFeed: `[${feedRoleNodeAttribute}="${feedRoleNodeValue}"] > div`
+const feedListSelector = {
+    ssrbFeed: '#ssrb_feed_start + div > div > *:not([seen])',
+    roleFeed: `[${feedRoleNodeAttribute}="${feedRoleNodeValue}"] > div > *:not([seen])`
 };
+const feedListRootSelector = '#ssrb_composer_end + div';
 const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
@@ -45,8 +46,7 @@ const hideSponsoredPosts = ssrbFeedStart => {
 };
 
 const hideSuggestedPosts = ssrbFeedStart => {
-    const feedListSelector = `${feedListParentNodeSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']} > *:not([seen])`
-    const feedList = document.querySelectorAll(feedListSelector);
+    const feedList = document.querySelectorAll(feedListSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
     feedList.forEach((feedNode) => {
         feedNode.setAttribute('seen', true);
         Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
@@ -62,14 +62,14 @@ const hideSuggestedPosts = ssrbFeedStart => {
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.isFacebookSite) {
-        const ssrbFeedStart = document.getElementById('ssrb_feed_start');
-        const feedListParentNode = document.querySelector(feedListParentNodeSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
-        const config = { attributes: false, childList: true, subtree: false };
+        const feedListRootNode = document.querySelector(feedListRootSelector);
+        const config = { attributes: false, childList: true, subtree: true };
         const callback = (_mutationsList, _observer) => {
+            const ssrbFeedStart = document.getElementById('ssrb_feed_start');
             hideSponsoredPosts(ssrbFeedStart);
             hideSuggestedPosts(ssrbFeedStart);
         };
         const observer = new MutationObserver(callback);
-        observer.observe(feedListParentNode, config);
+        observer.observe(feedListRootNode, config);
     }
 });
