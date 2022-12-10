@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Facebook Ad Blocker",
-    "description": "Hide the sponsored and recommended posts on Facebook",
+    "description": "Adjust the CSS attributes of sponsored and suggested posts on Facebook to improve the user experiences",
     "version": "1.0.0",
     "icons": {
         "16": "logo16.png",
