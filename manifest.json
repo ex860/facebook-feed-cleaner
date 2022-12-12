@@ -8,7 +8,9 @@
         "48": "logo48.png",
         "128": "logo128.png"
     },
-    "permissions": ["tabs"],
+    "permissions": [
+        "tabs"
+    ],
     "host_permissions": [
         "http://www.facebook.com/"
     ],
@@ -18,7 +20,9 @@
                 "http://*/*",
                 "https://*/*"
             ],
-            "js": ["content_scripts.js"]
+            "js": [
+                "content_scripts.js"
+            ]
         }
     ],
     "background": {

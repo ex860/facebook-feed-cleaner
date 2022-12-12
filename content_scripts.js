@@ -61,8 +61,11 @@ const hideSuggestedPosts = ssrbFeedStart => {
 };
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-    if (request.isFacebookSite) {
+    if (request.isInFeedList) {
         const feedListRootNode = document.querySelector(feedListRootSelector);
+        if (!feedListRootNode) {
+            return;
+        }
         const config = { attributes: false, childList: true, subtree: true };
         const callback = (_mutationsList, _observer) => {
             const ssrbFeedStart = document.getElementById('ssrb_feed_start');
