@@ -9,7 +9,6 @@ const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
 const hideSponsoredPosts = ssrbFeedStart => {
-
     document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]').forEach((node) => {
         node.setAttribute('seen', true);
 
@@ -22,10 +21,58 @@ const hideSponsoredPosts = ssrbFeedStart => {
             console.log('Sponsored post hidden!');
         }
     });
+
+    const sponsoredIds = [];
+    document.querySelectorAll('svg text:not([seen])').forEach((node) => {
+        node.setAttribute('seen', true);
+        if (sponsoredLabels.includes(node.textContent)) {
+            sponsoredIds.push(node.id);
+        }
+    });
+    if (sponsoredIds.length) {
+        const sponsoredIdselectors = sponsoredIds.map(id => `#${id}`);
+        document.querySelectorAll(`svg > use:not([seen])`).forEach((useNode) => {
+            useNode.setAttribute('seen', true);
+            if (sponsoredIdselectors.includes(useNode.getAttribute('xlink:href'))) {
+                let child = useNode;
+                let parent = useNode?.parentNode;
+                let grandParent = parent?.parentNode;
+                while (grandParent) {
+                    if (
+                        ssrbFeedStart && grandParent.parentNode === ssrbFeedStart.nextElementSibling
+                        || !ssrbFeedStart && grandParent.getAttribute(feedRoleNodeAttribute) === feedRoleNodeValue
+                    ) {
+                        break;
+                    }
+                    child = parent;
+                    parent = grandParent;
+                    grandParent = parent.parentNode;
+                }
+                if (grandParent && child.style.visibility === '') {
+                    child.style.visibility = 'hidden';
+                    child.style.height = '0px';
+                    console.log('Sponsored post hidden!');
+                }
+            }
+        });
+    }
 };
 
 const hideSuggestedPosts = ssrbFeedStart => {
-    const feedList = document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]');
+    let feedList = document.querySelectorAll(feedListSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
+    feedList.forEach((feedNode) => {
+        feedNode.setAttribute('seen', true);
+        Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
+            if (suggestedLabels.includes(dirNode.textContent)) {
+                feedNode.style.visibility = 'hidden';
+                feedNode.style.height = '0px';
+                console.log('Suggested post hidden!');
+                // return true;
+            }
+        });
+    });
+
+    feedList = document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]');
     feedList.forEach((feedNode) => {
         feedNode.setAttribute('seen', true);
         Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
@@ -34,10 +81,11 @@ const hideSuggestedPosts = ssrbFeedStart => {
                 feedNode.style.visibility = 'hidden';
                 feedNode.style.height = '0px';
                 console.log('Suggested post hidden!');
-                return true;
+                // return true;
             }
         });
     });
+
 };
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
