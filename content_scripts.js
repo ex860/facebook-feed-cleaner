@@ -9,48 +9,28 @@ const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
 const hideSponsoredPosts = ssrbFeedStart => {
-    const sponsoredIds = [];
-    document.querySelectorAll('svg text:not([seen])').forEach((node) => {
+
+    document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]').forEach((node) => {
         node.setAttribute('seen', true);
-        if (sponsoredLabels.includes(node.textContent)) {
-            sponsoredIds.push(node.id);
+
+        if (node.querySelectorAll('div.sponsored_ad').length != 0)
+        {
+            console.log(node.textContent);
+            child = (node.querySelectorAll('div.sponsored_ad'))[0];
+            child.style.visibility = 'hidden';
+            child.style.height = '0px';
+            console.log('Sponsored post hidden!');
         }
     });
-    if (sponsoredIds.length) {
-        const sponsoredIdselectors = sponsoredIds.map(id => `#${id}`);
-        document.querySelectorAll(`svg > use:not([seen])`).forEach((useNode) => {
-            useNode.setAttribute('seen', true);
-            if (sponsoredIdselectors.includes(useNode.getAttribute('xlink:href'))) {
-                let child = useNode;
-                let parent = useNode?.parentNode;
-                let grandParent = parent?.parentNode;
-                while (grandParent) {
-                    if (
-                        ssrbFeedStart && grandParent.parentNode === ssrbFeedStart.nextElementSibling
-                        || !ssrbFeedStart && grandParent.getAttribute(feedRoleNodeAttribute) === feedRoleNodeValue
-                    ) {
-                        break;
-                    }
-                    child = parent;
-                    parent = grandParent;
-                    grandParent = parent.parentNode;
-                }
-                if (grandParent && child.style.visibility === '') {
-                    child.style.visibility = 'hidden';
-                    child.style.height = '0px';
-                    console.log('Sponsored post hidden!');
-                }
-            }
-        });
-    }
 };
 
 const hideSuggestedPosts = ssrbFeedStart => {
-    const feedList = document.querySelectorAll(feedListSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
+    const feedList = document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]');
     feedList.forEach((feedNode) => {
         feedNode.setAttribute('seen', true);
         Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
             if (suggestedLabels.includes(dirNode.textContent)) {
+                console.log(dirNode.textContent);
                 feedNode.style.visibility = 'hidden';
                 feedNode.style.height = '0px';
                 console.log('Suggested post hidden!');
