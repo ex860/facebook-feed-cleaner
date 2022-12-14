@@ -9,6 +9,19 @@ const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
 const hideSponsoredPosts = ssrbFeedStart => {
+    document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]').forEach((node) => {
+        node.setAttribute('seen', true);
+
+        if (node.querySelectorAll('div.sponsored_ad').length != 0)
+        {
+            console.log(node.textContent);
+            child = (node.querySelectorAll('div.sponsored_ad'))[0];
+            child.style.visibility = 'hidden';
+            child.style.height = '0px';
+            console.log('Sponsored post hidden!');
+        }
+    });
+
     const sponsoredIds = [];
     document.querySelectorAll('svg text:not([seen])').forEach((node) => {
         node.setAttribute('seen', true);
@@ -46,7 +59,7 @@ const hideSponsoredPosts = ssrbFeedStart => {
 };
 
 const hideSuggestedPosts = ssrbFeedStart => {
-    const feedList = document.querySelectorAll(feedListSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
+    let feedList = document.querySelectorAll(feedListSelector[ssrbFeedStart ? 'ssrbFeed' : 'roleFeed']);
     feedList.forEach((feedNode) => {
         feedNode.setAttribute('seen', true);
         Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
@@ -54,10 +67,25 @@ const hideSuggestedPosts = ssrbFeedStart => {
                 feedNode.style.visibility = 'hidden';
                 feedNode.style.height = '0px';
                 console.log('Suggested post hidden!');
-                return true;
+                // return true;
             }
         });
     });
+
+    feedList = document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]');
+    feedList.forEach((feedNode) => {
+        feedNode.setAttribute('seen', true);
+        Array.from(feedNode.querySelectorAll('[dir="auto"]')).some(dirNode => {
+            if (suggestedLabels.includes(dirNode.textContent)) {
+                console.log(dirNode.textContent);
+                feedNode.style.visibility = 'hidden';
+                feedNode.style.height = '0px';
+                console.log('Suggested post hidden!');
+                // return true;
+            }
+        });
+    });
+
 };
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
