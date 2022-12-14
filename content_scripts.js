@@ -9,7 +9,7 @@ const sponsoredLabels = ['贊助', 'Sponsored'];
 const suggestedLabels = ['為你推薦', 'Suggested for you'];
 
 const hideSponsoredPosts = ssrbFeedStart => {
-    document.querySelectorAll('div[data-pagelet="FeedUnit_{n}"]').forEach((node) => {
+    document.querySelectorAll('div[data-pagelet^="FeedUnit_"]').forEach((node) => {
         node.setAttribute('seen', true);
 
         if (node.querySelectorAll('div.sponsored_ad').length != 0)
