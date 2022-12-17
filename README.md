@@ -1,4 +1,4 @@
-# Facebook Ad Blocker
+# Facebook Feed Cleaner
 
 Hide the sponsored and suggested posts on Facebook
 

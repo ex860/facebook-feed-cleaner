@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Facebook Ad Blocker",
+    "name": "Facebook Feed Cleaner",
     "description": "Adjust the CSS attributes of sponsored and suggested posts on Facebook to improve the user experiences",
     "version": "1.0.0",
     "icons": {
